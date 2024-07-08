@@ -18,3 +18,4 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+app/Http/Controllers/Api/V1/Notes.md
