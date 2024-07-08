@@ -8,14 +8,30 @@ use App\Http\Requests\UpdateInvoiceRequest;
 use App\Http\Controllers\Controller; // we have to manually import when namespaces changing
 use App\Http\Resources\V1\InvoiceResource;
 use App\Http\Resources\V1\InvoiceCollection;
+use App\Filters\V1\InvoiceFilter;
+use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        // return new InvoiceCollection(Invoice::paginate());
+
+        $filter = new InvoiceFilter();
+        $queryItems = $filter->transform($request);
+
+        if (count($queryItems) == 0){
+            return new InvoiceCollection(Invoice::paginate());
+        } else {
+            // return new InvoiceCollection(Invoice::where($queryItems)->paginate());    // problem is paginate not working with filters
+            $invoices = Invoice::where($queryItems)->paginate();
+            return new InvoiceCollection($invoices->appends($request->query()));   // solution - append request query parameter
+        }
+
+        Invoice::where($queryItems);
         return new InvoiceCollection(Invoice::paginate());
     }
 

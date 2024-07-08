@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller; // we have to manually import when namespac
 use App\Http\Resources\V1\CustomerResource;
 use App\Http\Resources\V1\CustomerCollection;
 use Illuminate\Http\Request;
-use App\Services\V1\CustomerQuery;
+use App\Filters\V1\CustomerFilter;
 
 class CustomerController extends Controller
 {
@@ -24,7 +24,7 @@ class CustomerController extends Controller
         //* Filtering Data Example query parameter in url - customers?name[like]=john
         //* http://127.0.0.1:8000/api/V1/customers?postalCode[gt]=30000&type[eq]=I
 
-        $filter = new CustomerQuery(); // creating custom class called CustomerQuery & create instance to filter things
+        $filter = new CustomerFilter(); // creating custom class called CustomerQuery & create instance to filter things
         $queryItems = $filter->transform($request); // transform method gives us array of query parameters to pass model eloquent
 
         // Customer::where([['column', 'operator', 'value'],['column', 'operator', 'value']]); // array of query parameters look like this
@@ -32,7 +32,10 @@ class CustomerController extends Controller
         if (count($queryItems) == 0){
             return new CustomerCollection(Customer::paginate());
         } else {
-            return new CustomerCollection(Customer::where($queryItems)->paginate());
+              // return new CustomerCollection(Customer::where($queryItems)->paginate());    // problem is paginate not working with filters
+              $invoices = Customer::where($queryItems)->paginate();
+              return new CustomerCollection($invoices->appends($request->query()));   // solution - append request query parameter
+
         }
 
 

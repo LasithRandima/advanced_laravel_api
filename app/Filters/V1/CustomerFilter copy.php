@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Services\V1;
+namespace App\Filters\V1;
 
 use illuminate\Http\Request;
 use PHPUnit\Framework\Constraint\Operator;
 
-class CustomerQuery {
-
+class CustomerFilter {
 
     protected $safeParms = [
         'name' => ['eq', 'li'],
