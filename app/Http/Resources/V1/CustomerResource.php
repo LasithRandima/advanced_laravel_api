@@ -25,7 +25,7 @@ class CustomerResource extends JsonResource
             'state' => $this->state,
             'city' => $this->city,
             'postalCode' => $this->postal_code,  // custormize fieldnames in response because of json camelcase naming convention
-            'invoices' => InvoiceResource::collection($this->whenLoaded('invoices')),
+            'invoices' => InvoiceResource::collection($this->whenLoaded('invoices')), // only when added to the response only when requesting. otherwise not include
         ];
     }
 }

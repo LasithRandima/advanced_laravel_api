@@ -27,12 +27,13 @@ class CustomerController extends Controller
         $filter = new CustomerFilter();
         $filterItems = $filter->transform($request); // Customer::where([['column', 'operator', 'value'],['column', 'operator', 'value']]);
 
-        $includeInvoices = $request->query('includeInvoices');
+
+        $includeInvoices = $request->query('includeInvoices'); // http://127.0.0.1:8000/api/V1/customers?includeInvoices=true
 
         $customers = Customer::where($filterItems);
 
         if($includeInvoices){
-            $customers = $customers->with('invoices');
+            $customers = $customers->with('invoices'); // using relationships attaching data
         }
 
         return new CustomerCollection($customers->paginate()->appends($request->query()));
@@ -61,7 +62,15 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
-        // return $customer;
+        // return new CustomerResource($customer);
+
+        $includeInvoices = request()->query('includeInvoices'); // http://127.0.0.1:8000/api/V1/customers?includeInvoices=true
+
+        if ($includeInvoices){
+            return new CustomerResource($customer->loadMissing('invoices')); //loading related data using relations
+            // we already have Customer $customer. so that situation don't want to make queries. just load missing invoices.
+        }
+
         return new CustomerResource($customer);
     }
 
