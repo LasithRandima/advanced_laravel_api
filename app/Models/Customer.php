@@ -9,7 +9,7 @@ class Customer extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['postalCode']; // we have to guard postalCode because field_name is postal_code. can't add postalCode to sql query
+    protected $guarded = ['postalCode']; // the request has postalCode & postal_code both. so we have to guard postalCode because field_name in db is postal_code. can't add postalCode to sql query
 
     // protected $fillable = [
     //     'name',
