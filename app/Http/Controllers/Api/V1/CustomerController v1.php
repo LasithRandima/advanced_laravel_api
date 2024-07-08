@@ -24,19 +24,19 @@ class CustomerController extends Controller
         //* Filtering Data Example query parameter in url - customers?name[like]=john
         //* http://127.0.0.1:8000/api/V1/customers?postalCode[gt]=30000&type[eq]=I
 
-        $filter = new CustomerFilter();
-        $filterItems = $filter->transform($request); // Customer::where([['column', 'operator', 'value'],['column', 'operator', 'value']]);
+        $filter = new CustomerFilter(); // creating custom class called CustomerQuery & create instance to filter things
+        $queryItems = $filter->transform($request); // transform method gives us array of query parameters to pass model eloquent
 
-        $includeInvoices = $request->query('includeInvoices');
+        // Customer::where([['column', 'operator', 'value'],['column', 'operator', 'value']]); // array of query parameters look like this
 
-        $customers = Customer::where($filterItems);
+        if (count($queryItems) == 0){
+            return new CustomerCollection(Customer::paginate());
+        } else {
+              // return new CustomerCollection(Customer::where($queryItems)->paginate());    // problem is paginate not working with filters
+              $invoices = Customer::where($queryItems)->paginate();
+              return new CustomerCollection($invoices->appends($request->query()));   // solution - append request query parameter
 
-        if($includeInvoices){
-            $customers = $customers->with('invoices');
         }
-
-        return new CustomerCollection($customers->paginate()->appends($request->query()));
-
 
     }
 
