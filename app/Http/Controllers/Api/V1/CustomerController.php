@@ -83,6 +83,7 @@ class CustomerController extends Controller
      */
     public function destroy(Customer $customer)
     {
-        //
+        $customer->delete();
+        return response()->json(['message' => 'Customer has been deleted successfully'], 200);
     }
 }

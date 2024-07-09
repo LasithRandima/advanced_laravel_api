@@ -36,18 +36,20 @@ Route::get('/setup',function(){
 
         // Create an API token for the authenticated user - 3 types
         // Token Name , Token Abilities
-        // you want to create separete middleware and use that middleware in api routes for check ability real[authorization]. this is only representation.
+        // // you want to create separete middleware and use that middleware in api routes for check ability real[authorization]. this is only representation.
+        // or we can simply use santum capabilities. in request - tokenCan
         // $user->createToken('admin-token', ['create', 'update', 'delete']);
         // this will also work but it's check only authenticate part only. not authorization. just protecting routes with sanctum.
         // When a request is made to a protected route, the client must include the token in the Authorization header as a Bearer token: Authorization: Bearer {token}.
 
         $adminToken = $user->createToken('admin-token', ['create', 'update', 'delete']);
         $updateToken = $user->createToken('update-token', ['create', 'update']);
-        $basicToken = $user->createToken('basic-token');
+        $basicToken = $user->createToken('basic-token', ['none']); // none capability - but can read
+        // $basicToken = $user->createToken('basic-token'); // all capability
 
         return [
-            'admin' => $adminToken->plainTextToken,
-            'update' => $updateToken->plainTextToken,
+            'admin' => $adminToken->plainTextToken,  // this is the only time we can get plain text token. because in db it will store as hashed value.
+            'update' => $updateToken->plainTextToken, // to check routes protected or not by sanctum we have to output that.
             'basic' => $basicToken->plainTextToken,
         ];
     }

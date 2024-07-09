@@ -12,7 +12,14 @@ class StoreCustomerRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $user = $this->user();
+        return $user != null && $user->tokenCan('create'); // check for token sanctum capabilities
+        // in db under personal_access_tokens table we can see token abilities column. tokenCan() check for this.
+
+
+        // return $user != null && $user->tokenCan('invoice:create'); // you can limit to certain resources as well - deeper level
+
+        // return true;
     }
 
     /**
