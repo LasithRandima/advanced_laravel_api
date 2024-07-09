@@ -10,6 +10,8 @@ use App\Http\Resources\V1\InvoiceResource;
 use App\Http\Resources\V1\InvoiceCollection;
 use App\Filters\V1\InvoiceFilter;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use App\Http\Requests\V1\BulkStoreInvoiceRequest;
 
 class InvoiceController extends Controller
 {
@@ -48,6 +50,16 @@ class InvoiceController extends Controller
     {
         //
     }
+
+    // Bulk insertion - payload looks like [{customerId:1, status:'B' }, {customerId:2, status:'P' }]
+
+        public function bulkStore(BulkStoreInvoiceRequest $request) {
+            $bulk = collect($request->all())->map(function($arr, $key){ // this like js map fuction in php way
+                return Arr::except($arr, ['customerId', 'billedDate', 'paidDate']);   //avoiding inserting these filds to request by making collection and convert into php array 
+            });
+
+            Invoice::insert($bulk->toArray());
+        }
 
     /**
      * Display the specified resource.
